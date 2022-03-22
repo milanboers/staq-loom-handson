@@ -10,6 +10,9 @@ public class LoomRequestHandler implements RequestHandler {
     public void handle(final ResponseWriter responseWriter, final String itemId) {
         // 1. Implementeer deze methode. Start een virtuele thread uit Project Loom op, haal daarbinnen de taal op
         // uit de bookService, en schrijf de response weg naar de responseWriter.
-        throw new UnsupportedOperationException();
+        Thread.ofVirtual().start(() -> {
+            final String language = bookService.getLanguage(itemId);
+            responseWriter.writeResponse(language);
+        });
     }
 }

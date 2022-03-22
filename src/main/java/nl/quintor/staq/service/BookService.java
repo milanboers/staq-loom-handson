@@ -10,6 +10,7 @@ public class BookService {
     public String getLanguage(final String bookId) {
         // 1. Implementeer deze methode.
         // 2. Zet hier eens een breakpoint neer. Op welke thread draait deze code?
-        throw new UnsupportedOperationException();
+        final var dbItem = databaseClient.getIsbn(bookId);
+        return metabookClient.getLanguage(dbItem);
     }
 }

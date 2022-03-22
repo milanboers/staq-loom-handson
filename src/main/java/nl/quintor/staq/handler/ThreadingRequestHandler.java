@@ -10,6 +10,10 @@ public class ThreadingRequestHandler implements RequestHandler {
     public void handle(final ResponseWriter responseWriter, final String itemId) {
         // 1. Implementeer deze methode. Start een nieuwe thread op, haal daarbinnen de taal op uit de bookService, en
         // schrijf de response weg naar de responseWriter.
-        throw new UnsupportedOperationException();
+        var thread = new Thread(() -> {
+            var language = bookService.getLanguage(itemId);
+            responseWriter.writeResponse(language);
+        });
+        thread.start();
     }
 }

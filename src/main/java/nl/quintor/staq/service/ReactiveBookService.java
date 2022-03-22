@@ -12,6 +12,7 @@ public class ReactiveBookService {
         // 1. Implementeer deze methode. Gebruik de reactive databaseClient en metabookClient.
         // Gebruik geen blocking calls (geen .block(), geen .join()!). Hint: kijk naar flatMap.
         // 2. Wat gebeurt er als je wel blocking calls gebruikt? Probeer het eens.
-        throw new UnsupportedOperationException();
+        return databaseClient.getIsbn(bookId)
+                .flatMap(metabookClient::getLanguage);
     }
 }
