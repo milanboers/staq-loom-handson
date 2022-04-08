@@ -55,7 +55,7 @@ public class TestUtil {
             final HttpClient httpClient, final int tps, final int total) {
         return Flux.interval(Duration.ofNanos(1_000_000_000L / tps))
                 .take(total)
-                .flatMap(bookId -> fireRequest(httpClient, bookId));
+                .flatMap(bookId -> fireRequest(httpClient, bookId), Integer.MAX_VALUE);
     }
 
     private static Mono<Result> fireRequest(final HttpClient httpClient, final long bookId) {
