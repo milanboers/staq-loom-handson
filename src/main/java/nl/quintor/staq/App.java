@@ -14,6 +14,9 @@ import java.io.UncheckedIOException;
 import java.net.ServerSocket;
 import java.util.logging.Logger;
 
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
+
 public class App
 {
     private static final Logger LOGGER = Logger.getGlobal();
@@ -22,7 +25,7 @@ public class App
         var myRequestHandler = new DumbRequestHandler();
         var app = new App();
         var port = app.start(myRequestHandler);
-        LOGGER.info("Listening on port " + port);
+        LOGGER.log(INFO, "Listening on port {}", port);
     }
 
     private DisposableServer server;
@@ -36,15 +39,17 @@ public class App
                 .protocol(HttpProtocol.H2C)
                 .handle((req, res) -> {
                     try {
-                        var writer = new ResponseWriter();
                         final var splitUri = req.uri().split("/books/");
                         if (splitUri.length < 2) {
                             return res.status(HttpResponseStatus.NOT_FOUND).send();
                         }
-                        requestHandler.handle(writer, splitUri[1]);
-                        return writer.getResponse()
-                                .flatMapMany(s -> res.sendString(Mono.just(s)));
-                    } catch (Throwable t) {
+                        var writerMono = Mono.<String>create(sink -> {
+                            var writer = new ResponseWriter(sink);
+                            requestHandler.handle(writer, splitUri[1]);
+                        });
+                        return writerMono.flatMapMany(s -> res.sendString(Mono.just(s)));
+                    } catch (final Exception t) {
+                        LOGGER.log(SEVERE, "Error occurred in HTTP handler", t);
                         return res.status(500).send();
                     }
                 })
